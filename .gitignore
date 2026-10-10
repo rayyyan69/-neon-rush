@@ -1,0 +1,22 @@
+# OS / editor
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
+
+# Node / tooling (not needed to play, but common when testing)
+node_modules/
+npm-debug.log*
+package-lock.json
+
+# Logs, temp files, test output
+*.log
+*.tmp
+*.swp
+*.pyc
+__pycache__/
+test-results/
+playwright-report/
+screenshots/
+.env

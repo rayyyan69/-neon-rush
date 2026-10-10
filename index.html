@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NEON RUSH: DUEL RACERS</title>
+<link rel="stylesheet" href="css/style.css">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2306081a'/%3E%3Cpath d='M10 40 L26 14 H40 L54 40 Z' fill='none' stroke='%2319f0ff' stroke-width='5' stroke-linejoin='round'/%3E%3Cpath d='M22 48 H46' stroke='%23ff2fd0' stroke-width='5' stroke-linecap='round'/%3E%3C/svg%3E">
+</head>
+<body>
+<canvas id="game" aria-label="Race view"></canvas>
+
+<div id="ui">
+  <!-- ============================ MAIN MENU ============================ -->
+  <section class="screen" id="s-menu" data-screen="menu">
+    <div class="menu-wrap">
+      <div class="menu-left">
+        <h1 class="logo"><span class="l1">NEON RUSH</span><span class="l2"><i></i>DUEL RACERS<i></i></span></h1>
+        <nav class="menu-list" aria-label="Main menu">
+          <button class="btn primary" data-act="play" autofocus>PLAY</button>
+          <button class="btn" data-act="quick">QUICK RACE</button>
+          <button class="btn" data-act="gp">GRAND PRIX</button>
+          <button class="btn" data-act="go" data-val="tracks">TRACK SELECT</button>
+          <button class="btn" data-act="go" data-val="garage">GARAGE</button>
+          <button class="btn" data-act="go" data-val="settings">SETTINGS</button>
+          <button class="btn" data-act="go" data-val="how">HOW TO PLAY</button>
+        </nav>
+        <p class="menu-hint"><kbd>↑</kbd><kbd>↓</kbd> navigate &nbsp; <kbd>Enter</kbd> confirm &nbsp; <kbd>Esc</kbd> back</p>
+      </div>
+      <div class="menu-right">
+        <div class="panel next-race">
+          <div class="ph">NEXT RACE</div>
+          <div class="nr-line"><b id="m-mode">QUICK RACE</b><span id="m-track">NEON CITY</span><span id="m-laps">3 LAPS</span></div>
+        </div>
+        <div class="ctl-pair">
+          <div class="panel p1"><div class="ph">PLAYER 1</div><div class="keys" data-keys="1"></div></div>
+          <div class="panel p2"><div class="ph">PLAYER 2</div><div class="keys" data-keys="2"></div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================ RACE SETUP ============================ -->
+  <section class="screen" id="s-setup" data-screen="setup">
+    <div class="page">
+      <header class="page-head"><h2>RACE SETUP</h2><button class="btn small" data-act="back">‹ BACK</button></header>
+      <div class="setup-grid">
+        <div class="panel">
+          <div class="ph">MODE</div>
+          <div class="cards" id="mode-cards">
+            <button class="card" data-act="mode" data-val="quick"><b>QUICK RACE</b><small>Head to head. First across the line wins.</small></button>
+            <button class="card" data-act="mode" data-val="gp"><b>GRAND PRIX</b><small>Three tracks, points for every race.</small></button>
+            <button class="card" data-act="mode" data-val="tt"><b>TIME TRIAL</b><small>No collisions. Beat the clock &amp; each other.</small></button>
+            <button class="card" data-act="mode" data-val="practice"><b>PRACTICE</b><small>Learn the track. No finish, no pressure.</small></button>
+          </div>
+        </div>
+        <div class="panel">
+          <div class="ph">LAPS</div>
+          <div class="chips" id="lap-chips">
+            <button class="chip" data-act="laps" data-val="1">1</button>
+            <button class="chip" data-act="laps" data-val="3">3</button>
+            <button class="chip" data-act="laps" data-val="5">5</button>
+            <button class="chip" data-act="laps" data-val="10">10</button>
+          </div>
+          <div class="ph" style="margin-top:18px">TRACK</div>
+          <div class="chips tracks" id="track-chips"></div>
+          <p class="note" id="setup-note"></p>
+        </div>
+        <div class="panel players">
+          <div class="ph">DRIVERS</div>
+          <div class="drv-row">
+            <div class="drv p1"><canvas width="200" height="110" id="sum-p1"></canvas><div><b>PLAYER 1</b><span id="sum-n1"></span></div></div>
+            <div class="drv p2"><canvas width="200" height="110" id="sum-p2"></canvas><div><b>PLAYER 2</b><span id="sum-n2"></span></div></div>
+          </div>
+          <button class="btn small" data-act="go" data-val="garage">OPEN GARAGE</button>
+        </div>
+      </div>
+      <div class="page-foot"><button class="btn primary big" data-act="start">START RACE</button></div>
+    </div>
+  </section>
+
+  <!-- ============================ TRACK SELECT ============================ -->
+  <section class="screen" id="s-tracks" data-screen="tracks">
+    <div class="page">
+      <header class="page-head"><h2>TRACK SELECT</h2><button class="btn small" data-act="back">‹ BACK</button></header>
+      <div class="track-cards" id="track-cards"></div>
+    </div>
+  </section>
+
+  <!-- ============================ GARAGE ============================ -->
+  <section class="screen" id="s-garage" data-screen="garage">
+    <div class="page wide">
+      <header class="page-head"><h2>GARAGE</h2><div class="head-btns"><button class="btn small" data-act="garage-reset">RESET BOTH</button><button class="btn small primary" data-act="back">DONE</button></div></header>
+      <div class="garage-grid">
+        <div class="panel gp p1" data-p="0"></div>
+        <div class="panel gp p2" data-p="1"></div>
+      </div>
+      <p class="note center">Every body has the same total rating. Spend <b>8 bonus points</b> on Acceleration, Top Speed, Handling and Nitro — both drivers get the same budget.</p>
+    </div>
+  </section>
+
+  <!-- ============================ SETTINGS ============================ -->
+  <section class="screen" id="s-settings" data-screen="settings">
+    <div class="page narrow">
+      <header class="page-head"><h2>SETTINGS</h2><button class="btn small" data-act="back">‹ BACK</button></header>
+      <div class="panel settings">
+        <label class="row"><span>MUSIC VOLUME</span><input type="range" min="0" max="100" id="set-music"><output id="o-music"></output></label>
+        <label class="row"><span>SOUND EFFECTS</span><input type="range" min="0" max="100" id="set-sfx"><output id="o-sfx"></output></label>
+        <div class="row"><span>MUTE ALL AUDIO</span><button class="toggle" data-act="tog" data-val="mute" id="t-mute"></button></div>
+        <div class="row"><span>SCREEN SHAKE</span><button class="toggle" data-act="tog" data-val="shake" id="t-shake"></button></div>
+        <div class="row"><span>PARTICLE QUALITY</span><button class="toggle" data-act="tog" data-val="quality" id="t-quality"></button></div>
+        <div class="row"><span>SHOW FPS</span><button class="toggle" data-act="tog" data-val="fps" id="t-fps"></button></div>
+        <div class="row"><span>FULLSCREEN</span><button class="toggle" data-act="fullscreen" id="t-full">TOGGLE</button></div>
+        <div class="row"><span>TEST SOUND</span><button class="toggle" data-act="test-sound">PLAY</button></div>
+        <div class="row"><span>SAVED RECORDS</span><button class="toggle danger" data-act="clear-records">CLEAR</button></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================ HOW TO PLAY ============================ -->
+  <section class="screen" id="s-how" data-screen="how">
+    <div class="page">
+      <header class="page-head"><h2>HOW TO PLAY</h2><button class="btn small" data-act="back">‹ BACK</button></header>
+      <div class="how-grid">
+        <div class="panel p1"><div class="ph">PLAYER 1</div><div class="keys" data-keys="1"></div></div>
+        <div class="panel p2"><div class="ph">PLAYER 2</div><div class="keys" data-keys="2"></div></div>
+        <div class="panel wide-p">
+          <div class="ph">RACE RULES</div>
+          <ul class="tips">
+            <li><b>Laps:</b> follow the arrows and cross the checkered line each lap. Driving backwards never counts.</li>
+            <li><b>Nitro:</b> hold your Shift key to boost. It drains the blue meter and slowly recharges when released.</li>
+            <li><b>Off-road:</b> grass, sand and gravel slow you down hard. Steer back to the tarmac.</li>
+            <li><b>Drifting:</b> brake into corners or combine nitro with steering to slide — smoke and skid marks show it.</li>
+            <li><b>Stuck?</b> Press <kbd>Q</kbd> (P1) or <kbd>/</kbd> (P2) to be placed back on track. It also happens automatically if you stall.</li>
+            <li><b>Game keys:</b> <kbd>Esc</kbd> pause · <kbd>R</kbd> restart (pause or results) · <kbd>M</kbd> mute · <kbd>Enter</kbd> confirm.</li>
+            <li><b>Time Trial:</b> cars ghost through each other — fastest total time wins; chase the medal times.</li>
+            <li><b>Grand Prix:</b> 10 points for a win, 6 for second, 0 for not finishing. Most points after 3 races is champion.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================ PAUSE ============================ -->
+  <section class="screen dim" id="s-pause" data-screen="pause">
+    <div class="center-box">
+      <h2 class="big-title">PAUSED</h2>
+      <div class="menu-list narrow">
+        <button class="btn primary" data-act="resume">RESUME</button>
+        <button class="btn" data-act="restart">RESTART RACE</button>
+        <button class="btn" data-act="go" data-val="settings">SETTINGS</button>
+        <button class="btn" data-act="endrace" id="b-endrace">END RACE</button>
+        <button class="btn" data-act="quit">QUIT TO MENU</button>
+      </div>
+      <p class="menu-hint"><kbd>Esc</kbd> resume &nbsp; <kbd>R</kbd> restart</p>
+    </div>
+  </section>
+
+  <!-- ============================ RESULTS ============================ -->
+  <section class="screen dim" id="s-results" data-screen="results">
+    <div class="results">
+      <div class="res-banner" id="res-banner">PLAYER 1 WINS</div>
+      <div class="res-sub" id="res-sub"></div>
+      <div class="panel"><table class="res-table" id="res-table"></table></div>
+      <div class="gp-box" id="gp-box"></div>
+      <div class="res-btns">
+        <button class="btn primary" data-act="rematch" id="b-rematch">REMATCH</button>
+        <button class="btn" data-act="next" id="b-next">NEXT RACE</button>
+        <button class="btn" data-act="res-setup">CHANGE SETUP</button>
+        <button class="btn" data-act="quit">MAIN MENU</button>
+      </div>
+    </div>
+  </section>
+
+  <button id="mute-btn" class="icon-btn" data-act="tog" data-val="mute" title="Mute / unmute (M)" aria-label="Mute"><svg viewBox="0 0 24 24" width="22" height="22"><path d="M3 9v6h4l5 4V5L7 9H3z" fill="currentColor"/><path id="mute-waves" d="M15.5 8.5a5 5 0 010 7M18 6a8.5 8.5 0 010 12" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path id="mute-x" d="M16 9l6 6m0-6l-6 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="display:none"/></svg></button>
+  <div id="toast"></div>
+  <div id="fade"></div>
+</div>
+<noscript><p style="position:fixed;inset:0;display:grid;place-items:center;color:#fff;background:#05060f;font:20px sans-serif">NEON RUSH needs JavaScript enabled.</p></noscript>
+
+<script src="js/tracks.js"></script>
+<script src="js/audio.js"></script>
+<script src="js/cars.js"></script>
+<script src="js/game.js"></script>
+<script src="js/ui.js"></script>
+</body>
+</html>
